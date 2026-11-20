@@ -43,9 +43,27 @@
 
   function applyTheme(theme) {
     document.documentElement.setAttribute("data-theme", theme);
-    var meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute("content", theme === "dark" ? "#171d19" : "#f4f6f3");
+    refreshThemeColor();
     refreshThemeButton();
+  }
+  // The phone browser bar takes the page colour of the current theme.
+  function refreshThemeColor() {
+    var meta = document.querySelector('meta[name="theme-color"]');
+    var bg = getComputedStyle(document.documentElement).getPropertyValue("--bg").trim();
+    if (meta && bg) meta.setAttribute("content", bg);
+  }
+
+  /* colour themes (palettes): "jade" is the default, the others are in palettes.css */
+  var PALETTES = ["jade", "ocean", "dusk", "rose", "coral", "mono"];
+  function currentPalette() {
+    return document.documentElement.getAttribute("data-palette") || "jade";
+  }
+  function setPalette(name) {
+    if (PALETTES.indexOf(name) === -1) return;
+    if (name === "jade") document.documentElement.removeAttribute("data-palette");
+    else document.documentElement.setAttribute("data-palette", name);
+    store.set("palette", name === "jade" ? "" : name);
+    refreshThemeColor();
   }
 
   function setTheme(theme) {
@@ -205,6 +223,11 @@
     onLang: onLang,
     applyI18n: applyI18n,
     formatDate: formatDate,
+    setTheme: setTheme,
+    currentTheme: currentTheme,
+    PALETTES: PALETTES,
+    setPalette: setPalette,
+    currentPalette: currentPalette,
     toast: toast,
     init: init
   };

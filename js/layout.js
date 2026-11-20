@@ -41,6 +41,7 @@
     repeat: '<path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14M7 22l-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/>',
     arrowRight: '<path d="M5 12h14M12 5l7 7-7 7"/>',
     chevronDown: '<path d="m6 9 6 6 6-6"/>',
+    palette: '<circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.93 0 1.65-.75 1.65-1.69 0-.44-.18-.84-.44-1.13-.29-.29-.44-.65-.44-1.13a1.64 1.64 0 0 1 1.67-1.67h2c3.05 0 5.55-2.5 5.55-5.55C21.97 6.01 17.46 2 12 2z"/>',
   };
   function icon(name, size = 20) {
     const s = svgEl("svg", { viewBox: "0 0 24 24", width: size, height: size, fill: "none", stroke: "currentColor", "stroke-width": 2, "stroke-linecap": "round", "stroke-linejoin": "round", "aria-hidden": "true", class: "icon icon-" + name });
@@ -176,13 +177,78 @@
     return { refresh };
   }
 
-  /* ---------- logo (real SVG files; CSS shows the right one for the theme
-     and, on small phones, just the symbol) ---------- */
+  /* ---------- logo ----------
+     Drawn inline from js/logo.js so it takes the theme colours. "full" is the
+     symbol + wordmark, "mark" just the symbol (small phones, login page). */
+  function logoSvg(kind) {
+    const full = kind === "full";
+    const stroke = { fill: "none", "stroke-width": 5, "stroke-linecap": "round" };
+    return svgEl("svg", { viewBox: full ? "0 0 180 48" : "0 0 48 48", class: "logo-svg logo-" + kind, "aria-hidden": "true", focusable: "false" },
+      svgEl("path", { d: LOGO.wave, class: "logo-wave", ...stroke }),
+      svgEl("path", { d: LOGO.stem, class: "logo-stem", ...stroke }),
+      full && svgEl("path", { d: LOGO.word, class: "logo-word" }));
+  }
   function logo(cls) {
-    const img = (file, extra) => el("img", { class: extra, src: "assets/brand/" + file, alt: "typeflow", width: file.includes("symbol") ? 32 : 120, height: 32 });
-    return el("a", { class: cls, href: "index.html" },
-      img("typeflow-logo.svg", "logo-full logo-light"), img("typeflow-logo-dark.svg", "logo-full logo-dark"),
-      img("typeflow-symbol.svg", "logo-mark logo-light"), img("typeflow-symbol-dark.svg", "logo-mark logo-dark"));
+    return el("a", { class: cls, href: "index.html", "aria-label": "typeflow" }, logoSvg("full"), logoSvg("mark"));
+  }
+
+  /* ---------- colour theme menu ----------
+     One button in the header opens: light / dark, then the colour themes.
+     Swatch colours: [page, accent, text] for light and dark (from palettes). */
+  const SWATCHES = {
+    jade: { light: ["#f4f6f3", "#397a61", "#202923"], dark: ["#171d19", "#80b99a", "#e9f0ea"] },
+    ocean: { light: ["#f2f5f8", "#2b6a99", "#1b2733"], dark: ["#0f1923", "#6cb0df", "#e5edf4"] },
+    dusk: { light: ["#f5f3f8", "#6a4fb4", "#251f38"], dark: ["#17131f", "#b49df1", "#ece8f5"] },
+    rose: { light: ["#f8f3f4", "#a9436a", "#33222a"], dark: ["#1d1317", "#f09ab6", "#f5e9ed"] },
+    coral: { light: ["#f3f4f6", "#b84e36", "#1f2430"], dark: ["#15171c", "#f08b72", "#eceef2"] },
+    mono: { light: ["#f4f4f4", "#1a1a1a", "#1a1a1a"], dark: ["#131313", "#ededed", "#ededed"] },
+  };
+  function themeMenu() {
+    const btn = el("button", { type: "button", id: "themeBtn", class: "icon-btn", "aria-expanded": "false", "aria-controls": "themeMenu", "data-i18n-aria": "theme.menu" }, icon("palette", 18));
+    const modeBtn = (mode) => el("button", { type: "button", class: "theme-mode", "data-mode": mode }, icon(mode === "light" ? "sun" : "moon", 16), el("span", { "data-i18n": "theme." + mode }));
+    const menu = el("div", { id: "themeMenu", class: "theme-menu", hidden: true },
+      el("p", { class: "theme-menu-title", "data-i18n": "theme.mode" }),
+      el("div", { class: "theme-modes" }, modeBtn("light"), modeBtn("dark")),
+      el("p", { class: "theme-menu-title", "data-i18n": "theme.colors" }),
+      el("ul", { class: "theme-list" }, Core.PALETTES.map((name) =>
+        el("li", null, el("button", { type: "button", class: "theme-opt", "data-palette-set": name },
+          el("span", { class: "theme-swatch", "aria-hidden": "true" }, el("span")), el("span", { "data-i18n": "theme." + name }))))));
+    const wrap = el("div", { class: "theme-pick" }, btn, menu);
+    function refresh() {
+      const mode = Core.currentTheme();
+      const palette = Core.currentPalette();
+      menu.querySelectorAll("[data-mode]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.mode === mode)));
+      menu.querySelectorAll("[data-palette-set]").forEach((b) => {
+        const [bg, accent, ink] = SWATCHES[b.dataset.paletteSet][mode];
+        b.setAttribute("aria-pressed", String(b.dataset.paletteSet === palette));
+        b.firstChild.style.cssText = `--sw-bg:${bg};--sw-accent:${accent};--sw-ink:${ink}`;
+      });
+    }
+    const open = (yes) => {
+      menu.hidden = !yes;
+      btn.setAttribute("aria-expanded", String(yes));
+      if (yes) {
+        refresh();
+        menu.querySelector("[aria-pressed=true]").focus();
+      }
+    };
+    btn.addEventListener("click", () => open(menu.hidden));
+    menu.addEventListener("click", (e) => {
+      const m = e.target.closest("[data-mode]");
+      const p = e.target.closest("[data-palette-set]");
+      if (m) Core.setTheme(m.dataset.mode);
+      if (p) Core.setPalette(p.dataset.paletteSet);
+      if (m || p) refresh();
+    });
+    wrap.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !menu.hidden) {
+        e.stopPropagation();
+        open(false);
+        btn.focus();
+      }
+    });
+    document.addEventListener("click", (e) => !menu.hidden && !wrap.contains(e.target) && open(false));
+    return wrap;
   }
 
   /* ---------- header ---------- */
@@ -198,7 +264,7 @@
     );
     const langs = el("div", { class: "seg", role: "group", "data-i18n-aria": "lang.label" },
       ["uz", "ru", "en"].map((code) => el("button", { type: "button", "data-lang": code, lang: code, text: code.toUpperCase() })));
-    const theme = el("button", { type: "button", id: "themeToggle", class: "icon-btn" }, icon("sun", 18), icon("moon", 18));
+    const theme = themeMenu();
     host.append(el("div", { class: "container header-bar" },
       logo("brand"),
       nav,
@@ -241,6 +307,7 @@
     titleFn = options.title || null;
     renderHeader();
     renderFooter();
+    document.querySelectorAll("[data-logo]").forEach((slot) => slot.replaceChildren(logoSvg(slot.dataset.logo)));
     Core.onLang(() => {
       renderUser();
       render();

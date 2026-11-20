@@ -18,6 +18,8 @@ Site #5 of my 10-websites course project. A calm typing test and trainer in Uzbe
 - Fonts: Onest (headings), Golos Text (text), IBM Plex Mono (the typing text and all numbers). All three have Cyrillic.
 - Signature: the **Rhythm Line**, a thin line under the live stats that moves with each key you press and settles when you stop. The finished test and the profile show it as a still line.
 - Logo: a "T" whose top bar is a wave (`assets/brand`): full logo for light and dark, one-colour version, symbol and favicon. The wordmark is converted to outlines, so it doesn't need the font. Keep free space around the logo of at least half the symbol's height.
+- Colour themes: Jade (default, from the brief), Ocean, Dusk, Rose, Coral and Mono, each in light and dark, picked from the palette button in the header and remembered. `tools/palettes.mjs` builds `css/palettes.css` from a few base colours per theme and adjusts every text colour until it passes WCAG AA (run `node tools/palettes.mjs` after changing a theme). The logo is drawn inline (`js/logo.js`) so it takes the theme colours.
+- Shapes are round (pill buttons and badges, round avatars and dots); the test settings are one short line of small menus.
 - Icons: Lucide (ISC licence).
 
 ## How it works
