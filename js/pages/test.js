@@ -86,6 +86,11 @@
     $("liveProgress").textContent = kind === "time" ? String(Math.max(0, amount - s.elapsed)) : `${Math.min(s.wordIndex, amount)}/${amount}`;
     $("liveWpm").textContent = running ? Site.num(s.wpm) : "—";
     $("liveAcc").textContent = running ? Site.pct(s.acc) : "—";
+    // Beat ticks under the Rhythm Line: one per second (or per word), filled as you go.
+    const beats = kind === "time" ? Math.min(amount, 60) : amount;
+    const done = kind === "time" ? s.elapsed / amount : Math.min(s.wordIndex, amount) / amount;
+    $("rhythm").style.setProperty("--n", beats);
+    $("rhythm").style.setProperty("--p", Math.max(0, Math.min(1, done || 0)).toFixed(3));
   }
 
   /* ---------- results ---------- */
