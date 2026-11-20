@@ -62,26 +62,35 @@ window.TEXTS = {
   },
 };
 
-/* Keyboard layouts for the practice keyboard (rows of keys, lowercase). */
+/* Keyboard layouts for the practice keyboard (rows of keys, lowercase).
+   The Uzbek apostrophe (o', g') is the key to the right of L. */
 window.KEYBOARDS = {
-  latin: ["qwertyuiop", "asdfghjkl'", "zxcvbnm,."],
-  cyrillic: ["ёйцукенгшщзхъ", "фывапролджэ", "ячсмитьбю."],
+  latin: ["1234567890", "qwertyuiop", "asdfghjkl'", "zxcvbnm,."],
+  cyrillic: ["ё1234567890", "йцукенгшщзхъ", "фывапролджэ", "ячсмитьбю."],
 };
 
-/* Practice lessons. letters: the keys a drill uses (it builds short
-   pseudo-words from them); words: a filter that picks real words instead. */
+/* Practice lessons: six per language, in this order: home row, top row,
+   bottom row, special letters, numbers, common words.
+   letters: the keys a drill uses (it builds short pseudo-words from them)
+   words: "common" or "special" (real words matching `pattern`) or "caps"
+   (capitals and punctuation, for English). */
 window.LESSONS = [
-  { id: "en-home", lang: "en", keyboard: "latin", key: "home", letters: "asdfghjkl" },
-  { id: "en-top", lang: "en", keyboard: "latin", key: "top", letters: "qwertyuiop" },
-  { id: "en-bottom", lang: "en", keyboard: "latin", key: "bottom", letters: "zxcvbnm" },
-  { id: "en-words", lang: "en", keyboard: "latin", key: "words", words: "common" },
-  { id: "en-numbers", lang: "en", keyboard: "latin", key: "numbers", letters: "0123456789" },
   { id: "uz-home", lang: "uz", keyboard: "latin", key: "home", letters: "asdfghjkl" },
-  { id: "uz-special", lang: "uz", keyboard: "latin", key: "uzSpecial", words: "special", pattern: "o'|g'|sh|ch|ng" },
+  { id: "uz-top", lang: "uz", keyboard: "latin", key: "top", letters: "qwertyuiop" },
+  { id: "uz-bottom", lang: "uz", keyboard: "latin", key: "bottom", letters: "zxcvbnm" },
+  { id: "uz-special", lang: "uz", keyboard: "latin", key: "uzSpecial", words: "special", pattern: "o'|g'|sh|ch" },
+  { id: "uz-numbers", lang: "uz", keyboard: "latin", key: "numbers", letters: "0123456789" },
   { id: "uz-words", lang: "uz", keyboard: "latin", key: "words", words: "common" },
   { id: "ru-home", lang: "ru", keyboard: "cyrillic", key: "home", letters: "фывапролдж" },
   { id: "ru-top", lang: "ru", keyboard: "cyrillic", key: "top", letters: "йцукенгшщз" },
   { id: "ru-bottom", lang: "ru", keyboard: "cyrillic", key: "bottom", letters: "ячсмитьбю" },
   { id: "ru-special", lang: "ru", keyboard: "cyrillic", key: "ruSpecial", words: "special", pattern: "ё|й|щ|ы|ъ|ь|э|ю" },
+  { id: "ru-numbers", lang: "ru", keyboard: "cyrillic", key: "numbers", letters: "0123456789" },
   { id: "ru-words", lang: "ru", keyboard: "cyrillic", key: "words", words: "common" },
+  { id: "en-home", lang: "en", keyboard: "latin", key: "home", letters: "asdfghjkl" },
+  { id: "en-top", lang: "en", keyboard: "latin", key: "top", letters: "qwertyuiop" },
+  { id: "en-bottom", lang: "en", keyboard: "latin", key: "bottom", letters: "zxcvbnm" },
+  { id: "en-special", lang: "en", keyboard: "latin", key: "enSpecial", words: "caps" },
+  { id: "en-numbers", lang: "en", keyboard: "latin", key: "numbers", letters: "0123456789" },
+  { id: "en-words", lang: "en", keyboard: "latin", key: "words", words: "common" },
 ];

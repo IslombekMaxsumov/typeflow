@@ -3,9 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Typing</title>
+  <title>typeflow</title>
   <meta name="description" content="">
-  <meta name="theme-color" content="#f3f6fb">
+  <meta name="theme-color" content="#f4f6f3">
+  <link rel="icon" href="assets/brand/typeflow-favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Onest:wght@600;700&display=swap">
   <!-- Apply the saved theme before the page is drawn, so it never flashes. -->
   <script>
     window.APP_NS = "typing";
@@ -21,6 +25,7 @@
   <script defer src="js/texts.js"></script>
   <script defer src="js/store.js"></script>
   <script defer src="js/layout.js"></script>
+  <script defer src="js/rhythm.js"></script>
   <script defer src="js/engine.js"></script>
   <script defer src="js/charts.js"></script>
   <script defer src="js/pages/test.js"></script>
@@ -68,17 +73,19 @@
 
     <section id="testArea" class="test-area" aria-labelledby="testTitle">
       <h2 id="testTitle" class="visually-hidden" data-i18n="test.title"></h2>
-      <div class="live" aria-hidden="true">
-        <span id="liveProgress" class="live-main"></span>
-        <span id="liveWpm"></span>
-        <span id="liveAcc"></span>
+      <div class="live">
+        <div class="live-stat live-main"><span class="live-label" data-i18n="live.left"></span><span id="liveProgress" class="live-num"></span></div>
+        <div class="live-stat"><span class="live-label"><span data-i18n="res.wpm"></span> <span class="tip-wrap"><button type="button" class="tip-btn" aria-describedby="wpmTip" data-i18n-aria="tip.wpmBtn">i</button><span id="wpmTip" role="tooltip" class="tip" data-i18n="tip.wpm"></span></span></span><span id="liveWpm" class="live-num"></span></div>
+        <div class="live-stat"><span class="live-label" data-i18n="res.acc"></span><span id="liveAcc" class="live-num"></span></div>
       </div>
+      <div id="rhythm" class="rhythm" aria-hidden="true"></div>
+      <p id="readyHint" class="ready-hint" data-i18n="test.ready"></p>
       <div id="box" class="typing-box">
         <div id="words" class="words" aria-hidden="true"></div>
         <label for="typeInput" class="visually-hidden" data-i18n="test.inputLabel"></label>
         <input id="typeInput" class="type-input" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-describedby="srText">
         <p id="srText" class="visually-hidden"></p>
-        <div id="focusHint" class="focus-hint" aria-hidden="true" data-i18n="test.focus"></div>
+        <div id="focusHint" class="focus-hint" aria-hidden="true"></div>
       </div>
       <div class="test-actions">
         <button type="button" id="restart" class="btn btn-ghost"><span data-i18n="action.restart"></span></button>
@@ -90,9 +97,10 @@
       <h2 id="resTitle" tabindex="-1" data-i18n="res.title"></h2>
       <p id="resBest" class="pb-badge" hidden data-i18n="res.best"></p>
       <div class="res-main">
-        <div class="res-big"><span class="res-label" data-i18n="res.wpm"></span><span id="resWpm" class="res-value"></span></div>
+        <div class="res-big"><span class="res-label"><span data-i18n="res.wpm"></span> <span class="tip-wrap"><button type="button" class="tip-btn" aria-describedby="wpmTip2" data-i18n-aria="tip.wpmBtn">i</button><span id="wpmTip2" role="tooltip" class="tip" data-i18n="tip.wpm"></span></span></span><span id="resWpm" class="res-value"></span></div>
         <div class="res-big"><span class="res-label" data-i18n="res.acc"></span><span id="resAcc" class="res-value"></span></div>
       </div>
+      <div id="resRhythm" class="rhythm is-static" aria-hidden="true"></div>
       <dl id="resStats" class="res-stats"></dl>
       <div id="resChart" class="res-chart"></div>
       <p id="resGuest" class="notice" hidden></p>

@@ -3,9 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Typing</title>
+  <title>typeflow</title>
   <meta name="description" content="">
-  <meta name="theme-color" content="#f3f6fb">
+  <meta name="theme-color" content="#f4f6f3">
+  <link rel="icon" href="assets/brand/typeflow-favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Onest:wght@600;700&display=swap">
   <!-- Apply the saved theme before the page is drawn, so it never flashes. -->
   <script>
     window.APP_NS = "typing";
@@ -21,6 +25,7 @@
   <script defer src="js/texts.js"></script>
   <script defer src="js/store.js"></script>
   <script defer src="js/layout.js"></script>
+  <script defer src="js/rhythm.js"></script>
   <script defer src="js/pages/leaderboard.js"></script>
 </head>
 <body data-page="leaderboard">
@@ -28,7 +33,10 @@
   <header id="site-header" class="site-header"></header>
 
   <main id="main" tabindex="-1" class="container page">
-    <h1 data-i18n="page.leaderboard"></h1>
+    <div class="page-head">
+      <h1 data-i18n="page.leaderboard"></h1>
+      <span class="demo-badge" data-i18n="board.demo"></span>
+    </div>
     <form id="filters" class="options" novalidate>
         <fieldset class="opt-group ">
           <legend data-i18n="opt.mode"></legend>

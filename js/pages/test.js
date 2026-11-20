@@ -40,6 +40,7 @@
   }
 
   const { kind, amount } = parsedMode();
+  let rhythm = Rhythm.create($("rhythm")); // the typeflow Rhythm Line under the live stats
   let test = null; // set right below; showLive() may run while it's being created
   test = makeTest(kind, amount, newText());
 
@@ -49,7 +50,11 @@
     return Typing.create({
       host: $("words"), input, words, mode: kindNow, amount: amountNow,
       more: () => Typing.makeText({ lang: textLang(), textType: opts.ttype, count: 60, punct: opts.punct, nums: opts.nums }),
-      onStart: () => document.body.classList.add("is-typing"),
+      onStart: () => {
+        document.body.classList.add("is-typing");
+        $("readyHint").hidden = true;
+      },
+      onKey: (time) => rhythm.pulse(time),
       onTick: showLive,
       onFinish: showResults,
     });
@@ -61,7 +66,10 @@
     const { kind, amount } = parsedMode();
     const words = sameText ? currentWords : newText();
     $("words").replaceChildren();
+    rhythm.settle();
+    rhythm = Rhythm.create($("rhythm"));
     test = makeTest(kind, amount, words);
+    $("readyHint").hidden = false;
     document.body.classList.remove("is-typing");
     $("results").hidden = true;
     $("testArea").hidden = false;
@@ -70,16 +78,20 @@
     input.focus();
   }
 
+  // Time left (or words typed) is always shown; WPM and accuracy once you start.
   function showLive(s) {
     const { kind, amount } = parsedMode();
+    const running = test && test.isRunning();
+    $("liveProgress").previousElementSibling.textContent = t(kind === "time" ? "live.timeLeft" : "live.words");
     $("liveProgress").textContent = kind === "time" ? String(Math.max(0, amount - s.elapsed)) : `${Math.min(s.wordIndex, amount)}/${amount}`;
-    $("liveWpm").textContent = test && test.isRunning() ? t("live.wpm", { n: s.wpm }) : "";
-    $("liveAcc").textContent = test && test.isRunning() ? Site.pct(s.acc) : "";
+    $("liveWpm").textContent = running ? Site.num(s.wpm) : "—";
+    $("liveAcc").textContent = running ? Site.pct(s.acc) : "—";
   }
 
   /* ---------- results ---------- */
   let last = null;
   function showResults(r) {
+    rhythm.settle();
     document.body.classList.remove("is-typing");
     input.blur();
     const full = { ...r, lang: textLang(), textType: opts.ttype, punct: opts.punct, nums: opts.nums };
@@ -109,6 +121,7 @@
       ].map(([k, v]) => el("div", null, el("dt", { text: k }), el("dd", { text: v })))
     );
     $("resStats").querySelector("div:nth-child(3) dt").title = t("res.charsHelp");
+    Rhythm.still($("resRhythm"), r.series);
     $("resChart").replaceChildren(
       r.series.length > 1
         ? Charts.line(r.series.map((v, i) => ({ label: t("res.second", { n: i + 1 }), short: String(i + 1), value: v, tip: t("live.wpm", { n: v }) })), {
@@ -149,13 +162,37 @@
   });
 
   // Clicking the text focuses the hidden input; a hint shows when it isn't focused.
+  // Clicking the text focuses it. Leaving it pauses a running test (the timer
+  // stops) and says so; coming back continues.
+  const setHint = () => {
+    $("focusHint").textContent = t(test && test.isPaused() ? "test.paused" : "test.focus");
+  };
   box.addEventListener("click", () => input.focus());
-  input.addEventListener("focus", () => box.classList.remove("is-blurred"));
-  input.addEventListener("blur", () => box.classList.add("is-blurred"));
+  input.addEventListener("focus", () => {
+    box.classList.remove("is-blurred", "is-paused");
+    test.resume();
+    keepVisible();
+  });
+  input.addEventListener("blur", () => {
+    if (test.isRunning()) {
+      test.pause();
+      box.classList.add("is-paused");
+    }
+    box.classList.add("is-blurred");
+    setHint();
+  });
+  // Phones: keep the text in view above the on-screen keyboard.
+  const narrow = matchMedia("(max-width: 760px)");
+  function keepVisible() {
+    if (!narrow.matches) return;
+    setTimeout(() => box.scrollIntoView({ block: "center", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }), 60);
+  }
+  if (window.visualViewport) visualViewport.addEventListener("resize", () => document.activeElement === input && keepVisible());
 
   function render() {
     // The interface language changed: the hint texts change; the text being typed stays.
     fillForm();
+    setHint();
     showLive({ elapsed: 0, wordIndex: 0, wpm: 0, acc: 100 });
     renderResults();
     test.placeCaret();

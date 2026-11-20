@@ -18,6 +18,13 @@
   function drill(l) {
     const words = TEXTS.words[l.lang];
     if (l.words === "common") return Array.from({ length: 15 }, () => pick(words.slice(0, 80)));
+    if (l.words === "caps") {
+      // capitals and punctuation: "Word," "Next." "Why?"
+      return Array.from({ length: 15 }, (_, i) => {
+        const w = pick(words.slice(0, 120));
+        return (i % 2 ? w : w[0].toUpperCase() + w.slice(1)) + pick(["", "", ",", ".", "?", "!"]);
+      });
+    }
     if (l.words === "special") {
       const re = new RegExp(l.pattern);
       const matching = words.filter((w) => re.test(w));
@@ -51,6 +58,8 @@
     const code = currentLang();
     document.querySelector(`[name="plang"][value="${code}"]`).checked = true;
     const progress = Store.lessonProgress();
+    const list = lessonsFor(code);
+    $("langProgress").textContent = t("practice.langProgress", { done: list.filter((l) => progress[l.id] && progress[l.id].passed).length, total: list.length });
     $("lessons").replaceChildren(
       ...lessonsFor(code).map((l) => {
         const p = progress[l.id];
@@ -76,7 +85,7 @@
     $("lessonDone").hidden = true;
     $("nextLesson").hidden = true;
     $("lessonTitle").textContent = t("lesson." + l.key) + " · " + Site.langLabel(l.lang);
-    $("lessonGoal").textContent = t("practice.goal", { acc: PASS });
+    $("lessonGoal").textContent = t("lesson." + l.key + "Info") + " " + t("practice.goal", { acc: PASS });
     drawKeyboard(l);
     startDrill();
     $("lessonTitle").focus();
@@ -92,8 +101,8 @@
       onCaret: highlight,
       onTick: (s) => {
         $("pLiveProgress").textContent = `${Math.min(s.wordIndex, words.length)}/${words.length}`;
-        $("pLiveWpm").textContent = s.wpm ? t("live.wpm", { n: s.wpm }) : "";
-        $("pLiveAcc").textContent = s.wpm ? Site.pct(s.acc) : "";
+        $("pLiveWpm").textContent = s.wpm ? String(s.wpm) : "—"; // the label above already says WPM
+        $("pLiveAcc").textContent = s.wpm ? Site.pct(s.acc) : "—";
       },
       onFinish: (r) => {
         const passed = r.acc >= PASS;
@@ -147,7 +156,7 @@
     renderList();
     if (lesson && !$("lesson").hidden) {
       $("lessonTitle").textContent = t("lesson." + lesson.key) + " · " + Site.langLabel(lesson.lang);
-      $("lessonGoal").textContent = t("practice.goal", { acc: PASS });
+      $("lessonGoal").textContent = t("lesson." + lesson.key + "Info") + " " + t("practice.goal", { acc: PASS });
       const space = $("kbd").querySelector(".key-space");
       if (space) space.textContent = t("practice.space");
     }

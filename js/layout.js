@@ -116,6 +116,15 @@
     });
   }
 
+  /* ---------- logo (real SVG files; CSS shows the right one for the theme
+     and, on small phones, just the symbol) ---------- */
+  function logo(cls) {
+    const img = (file, extra) => el("img", { class: extra, src: "assets/brand/" + file, alt: "typeflow", width: file.includes("symbol") ? 32 : 120, height: 32 });
+    return el("a", { class: cls, href: "index.html" },
+      img("typeflow-logo.svg", "logo-full logo-light"), img("typeflow-logo-dark.svg", "logo-full logo-dark"),
+      img("typeflow-symbol.svg", "logo-mark logo-light"), img("typeflow-symbol-dark.svg", "logo-mark logo-dark"));
+  }
+
   /* ---------- header ---------- */
   const NAV = [["test", "index.html", "keyboard"], ["practice", "practice.html", "book"], ["leaderboard", "leaderboard.html", "trophy"], ["profile", "profile.html", "user"]];
 
@@ -131,11 +140,12 @@
       ["uz", "ru", "en"].map((code) => el("button", { type: "button", "data-lang": code, lang: code, text: code.toUpperCase() })));
     const theme = el("button", { type: "button", id: "themeToggle", class: "icon-btn" }, icon("sun", 18), icon("moon", 18));
     host.append(el("div", { class: "container header-bar" },
-      el("a", { class: "brand", href: "index.html", "data-i18n": "brand" }),
+      logo("brand"),
       nav,
       el("div", { class: "header-tools" }, el("div", { id: "userSlot", class: "user-slot" }), langs, theme)
     ));
     renderUser();
+    document.body.classList.add("has-tabbar"); // phones: the menu becomes a bottom bar (site.css)
   }
   // Who is logged in (or a "Log in" link). Redrawn after log in / log out.
   function renderUser() {
@@ -152,6 +162,8 @@
     const host = document.getElementById("site-footer");
     if (!host) return;
     host.append(el("div", { class: "container footer-inner" },
+      logo("footer-logo"),
+      el("p", { "data-i18n": "footer.tagline" }),
       el("p", { "data-i18n": "footer.note" }),
       el("p", { class: "footer-copy", "data-i18n": "footer.copy" })
     ));

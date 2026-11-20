@@ -40,6 +40,8 @@
     const active = [...counts.keys()].filter((k) => new Date(k) >= monday).length;
     return el("div", { class: "activity" },
       el("div", { class: "heat", role: "img", "aria-label": t("profile.activitySummary", { count: active }) }, cells),
+      el("div", { class: "heat-legend", "aria-hidden": "true" },
+        el("span", { text: t("profile.less") }), [0, 1, 2, 3, 4].map((l) => el("span", { class: "cell lv-" + l })), el("span", { text: t("profile.more") })),
       el("p", { class: "hint", text: t("profile.activitySummary", { count: active }) })
     );
   }
@@ -86,9 +88,10 @@
       ),
       el("dl", { class: "stat-strip" },
         [[t("profile.tests"), Site.num(list.length)], [t("profile.timeTyping"), Site.duration(totalSeconds)],
-          [t("profile.avg10"), avg ? Site.num(avg) + " " + t("unit.wpm") : "—"], [t("profile.best"), best ? Site.num(best.wpm) + " " + t("unit.wpm") : "—"]]
-          .map(([k, v]) => el("div", null, el("dt", { text: k }), el("dd", { text: v })))
+          [t("profile.avg10"), avg ? Site.num(avg) : "—", avg && t("unit.wpm")], [t("profile.best"), best ? Site.num(best.wpm) : "—", best && t("unit.wpm")]]
+          .map(([k, v, unit]) => el("div", null, el("dt", { text: k }), el("dd", null, v, unit && el("span", { class: "unit", text: " " + unit }))))
       ),
+      el("div", { id: "profRhythm", class: "rhythm is-static", "aria-hidden": "true" }),
       list.length === 0
         ? el("div", { class: "empty" }, el("h2", { text: t("profile.noTests") }), el("a", { class: "btn", href: "index.html", text: t("board.takeTest") }))
         : [
@@ -159,6 +162,8 @@
         )
       ),
     ].flat());
+    // the Rhythm Line of your recent tests (how even your speed has been)
+    Rhythm.still(document.getElementById("profRhythm"), chrono.map((r) => r.wpm));
   }
 
   Site.start(render, { title: () => (Store.current() ? Store.current().name : t("page.profile")) });

@@ -44,10 +44,10 @@
 
   /* ---------- the test ---------- */
   // options: { host, input, words, mode: "time"|"words", amount, more: () => [words],
-  //            onStart, onTick(stats), onFinish(result), onCaret(nextChar) }
+  //            onStart, onTick(stats), onFinish(result), onCaret(nextChar), onKey(time) }
   function create(options) {
     const { host, input } = options;
-    let words, typed, wi, started, finished, startTime, timer, elapsed, keys, series, perSecond, firstVisible;
+    let words, typed, wi, started, finished, startTime, timer, elapsed, keys, series, perSecond, firstVisible, paused, pausedAt, pausedMs;
 
     function reset(newWords) {
       clearInterval(timer);
@@ -61,6 +61,8 @@
       series = [];
       perSecond = [];
       firstVisible = 0;
+      paused = false;
+      pausedMs = 0;
       input.value = "";
       draw();
       tick(false);
@@ -201,6 +203,7 @@
       if (options.onStart) options.onStart();
     }
     function commitWord(word) {
+      if (options.onKey) options.onKey(performance.now());
       keys.total++;
       keys.thisSecond++;
       if (word === words[wi]) keys.correct++;
@@ -238,6 +241,7 @@
       const prev = typed[wi];
       if (v.length > prev.length) {
         const added = v.slice(prev.length);
+        if (options.onKey) options.onKey(performance.now());
         for (let k = 0; k < added.length; k++) {
           keys.total++;
           keys.thisSecond++;
@@ -270,7 +274,7 @@
       clearInterval(timer);
       if (elapsed === 0 || options.mode === "words") {
         // a words test can end mid-second: count the real time
-        elapsed = Math.max(1, Math.round((Date.now() - startTime) / 100) / 10);
+        elapsed = Math.max(1, Math.round((Date.now() - startTime - pausedMs) / 100) / 10);
       }
       const s = stats();
       paint(wi);
@@ -302,6 +306,20 @@
         reset(w);
       },
       stop: () => clearInterval(timer),
+      // Leaving the text pauses a running test; coming back continues it.
+      pause: () => {
+        if (!started || finished || paused) return;
+        paused = true;
+        pausedAt = Date.now();
+        clearInterval(timer);
+      },
+      resume: () => {
+        if (!paused) return;
+        paused = false;
+        pausedMs += Date.now() - pausedAt;
+        timer = setInterval(() => tick(true), 1000);
+      },
+      isPaused: () => paused,
       isRunning: () => started && !finished,
       words: () => words.slice(0, Math.max(wi + 1, 1)),
       placeCaret,

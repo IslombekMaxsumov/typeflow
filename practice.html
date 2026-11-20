@@ -3,9 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Typing</title>
+  <title>typeflow</title>
   <meta name="description" content="">
-  <meta name="theme-color" content="#f3f6fb">
+  <meta name="theme-color" content="#f4f6f3">
+  <link rel="icon" href="assets/brand/typeflow-favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Onest:wght@600;700&display=swap">
   <!-- Apply the saved theme before the page is drawn, so it never flashes. -->
   <script>
     window.APP_NS = "typing";
@@ -21,6 +25,7 @@
   <script defer src="js/texts.js"></script>
   <script defer src="js/store.js"></script>
   <script defer src="js/layout.js"></script>
+  <script defer src="js/rhythm.js"></script>
   <script defer src="js/engine.js"></script>
   <script defer src="js/pages/practice.js"></script>
 </head>
@@ -40,24 +45,25 @@
             <label><input type="radio" name="plang" value="en"> <span data-i18n="tlang.en"></span></label>
           </div>
         </fieldset>
-      <ul id="lessons" class="lesson-grid"></ul>
+      <p id="langProgress" class="lang-progress"></p>
+      <ul id="lessons" class="lesson-list"></ul>
     </div>
 
     <section id="lesson" class="lesson" hidden aria-labelledby="lessonTitle">
       <button type="button" id="backToLessons" class="back-link" data-i18n="practice.back"></button>
       <h2 id="lessonTitle" tabindex="-1"></h2>
       <p id="lessonGoal" class="hint"></p>
-      <div class="live" aria-hidden="true">
-        <span id="pLiveProgress" class="live-main"></span>
-        <span id="pLiveWpm"></span>
-        <span id="pLiveAcc"></span>
+      <div class="live">
+        <div class="live-stat live-main"><span class="live-label" data-i18n="live.words"></span><span id="pLiveProgress" class="live-num"></span></div>
+        <div class="live-stat"><span class="live-label" data-i18n="res.wpm"></span><span id="pLiveWpm" class="live-num"></span></div>
+        <div class="live-stat"><span class="live-label" data-i18n="res.acc"></span><span id="pLiveAcc" class="live-num"></span></div>
       </div>
       <div id="pbox" class="typing-box">
         <div id="pwords" class="words" aria-hidden="true"></div>
         <label for="ptypeInput" class="visually-hidden" data-i18n="test.inputLabel"></label>
         <input id="ptypeInput" class="type-input" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-describedby="psrText">
         <p id="psrText" class="visually-hidden"></p>
-        <div id="pfocusHint" class="focus-hint" aria-hidden="true" data-i18n="test.focus"></div>
+        <div id="pfocusHint" class="focus-hint" aria-hidden="true"></div>
       </div>
       <div id="kbd" class="kbd" aria-hidden="true"></div>
       <div id="lessonDone" class="lesson-done" role="status" hidden></div>
