@@ -84,7 +84,8 @@
     const running = test && test.isRunning();
     $("liveProgress").previousElementSibling.textContent = t(kind === "time" ? "live.timeLeft" : "live.words");
     $("liveProgress").textContent = kind === "time" ? String(Math.max(0, amount - s.elapsed)) : `${Math.min(s.wordIndex, amount)}/${amount}`;
-    $("liveWpm").textContent = running ? Site.num(s.wpm) : "—";
+    // WPM only after 1.5 s: before that one quick word would show a silly number
+    $("liveWpm").textContent = running && s.seconds >= 1.5 ? Site.num(s.wpm) : "—";
     $("liveAcc").textContent = running ? Site.pct(s.acc) : "—";
     // Beat ticks under the Rhythm Line: one per second (or per word), filled as you go.
     const beats = kind === "time" ? Math.min(amount, 60) : amount;

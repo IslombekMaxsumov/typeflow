@@ -47,7 +47,7 @@
   //            onStart, onTick(stats), onFinish(result), onCaret(nextChar), onKey(time) }
   function create(options) {
     const { host, input } = options;
-    let words, typed, wi, started, finished, startTime, timer, elapsed, keys, series, perSecond, firstVisible, paused, pausedAt, pausedMs;
+    let words, typed, wi, started, finished, startTime, timer, elapsed, keys, series, perSecond, scrollTop, lastCaretY, paused, pausedAt, pausedMs;
 
     function reset(newWords) {
       clearInterval(timer);
@@ -60,7 +60,9 @@
       keys = { total: 0, correct: 0, thisSecond: 0 };
       series = [];
       perSecond = [];
-      firstVisible = 0;
+      scrollTop = 0; // where the text is scrolled to (the line at the top)
+      lastCaretY = null;
+      host.scrollTop = 0;
       paused = false;
       pausedMs = 0;
       input.value = "";
@@ -125,27 +127,29 @@
         const r = (letters[letters.length - 1] || el).getBoundingClientRect();
         x = r.right; y = r.top; h = r.height;
       }
-      caret.style.transform = `translate(${x - box.left + host.scrollLeft}px, ${y - box.top + host.scrollTop}px)`;
+      const cy = y - box.top + host.scrollTop;
+      // Glide along a line, but jump straight to a new line (no diagonal swoosh).
+      caret.style.transition = lastCaretY !== null && Math.abs(cy - lastCaretY) > 1 ? "none" : "";
+      lastCaretY = cy;
+      caret.style.transform = `translate(${x - box.left + host.scrollLeft}px, ${cy}px)`;
       caret.style.height = h + "px";
       scrollLines(el);
       if (options.onCaret) options.onCaret(nextChar());
     }
-    // Keeps the current word on the first or second of three visible lines.
+    // Keeps the current word on the first or second of the three visible lines.
+    // The text scrolls up smoothly instead of jumping (no animation with
+    // "reduce motion"). Nothing is removed, so the caret never needs redoing.
     function scrollLines(current) {
-      const all = host.querySelectorAll(".word");
-      const first = all[firstVisible];
-      if (!first || !current) return;
-      const line = first.offsetHeight + parseFloat(getComputedStyle(first).marginBottom || 0);
+      const line = current.offsetHeight;
       if (line <= 0) return; // not drawn yet (e.g. a hidden tab)
-      if (current.offsetTop - first.offsetTop >= line * 2 - 2) {
-        const top = first.offsetTop;
-        const before = firstVisible;
-        while (all[firstVisible] && all[firstVisible].offsetTop === top && firstVisible < wi) {
-          all[firstVisible].hidden = true;
-          firstVisible++;
-        }
-        if (firstVisible > before) placeCaret(); // only redo it if a line really moved
-      }
+      const top = current.offsetTop;
+      let target = scrollTop;
+      if (top - scrollTop >= line * 2 - 2) target = top - line; // reached line 3: move up one line
+      else if (top < scrollTop) target = Math.max(0, top - line); // went back above the top
+      if (target === scrollTop) return;
+      scrollTop = target;
+      const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      host.scrollTo({ top: target, behavior: reduce ? "auto" : "smooth" });
     }
     const nextChar = () => {
       if (finished) return "";
@@ -155,8 +159,17 @@
     };
 
     /* numbers */
-    function stats() {
-      const minutes = Math.max(elapsed, 0.5) / 60;
+    // Seconds actually spent typing (pauses don’t count).
+    function realSeconds() {
+      if (!started) return 0;
+      const now = finished ? startTime + elapsed * 1000 + pausedMs : Date.now();
+      return Math.max(0, (now - startTime - pausedMs - (paused ? now - pausedAt : 0)) / 1000);
+    }
+    // live = true: numbers for the screen while typing. They use the real time
+    // and count the correct start of the word you are on, so they move as you type.
+    function stats(live = false) {
+      const seconds = live ? realSeconds() : elapsed;
+      const minutes = Math.max(seconds, live ? 1 : 0.5) / 60;
       let goodChars = 0;
       const chars = { correct: 0, wrong: 0, extra: 0, missed: 0 };
       for (let i = 0; i <= Math.min(wi, words.length - 1); i++) {
@@ -170,11 +183,12 @@
         }
         if (i < wi && t === w) goodChars += w.length + 1; // + the space
         if (i === wi && finished && t === w) goodChars += w.length;
+        if (live && i === wi && !finished && w.startsWith(t)) goodChars += t.length;
       }
       const wpm = Math.round(goodChars / 5 / minutes);
       const raw = Math.round(keys.total / 5 / minutes);
       const acc = keys.total ? Math.round((keys.correct / keys.total) * 1000) / 10 : 100;
-      return { wpm: started ? wpm : 0, raw: started ? raw : 0, acc, chars, elapsed, wordIndex: wi, words: words.length };
+      return { wpm: started ? wpm : 0, raw: started ? raw : 0, acc, chars, elapsed, seconds, wordIndex: wi, words: words.length };
     }
     function consistency() {
       const v = perSecond.filter((x, i) => i > 0 || x > 0);
@@ -192,7 +206,7 @@
         series.push(stats().wpm);
         if (options.mode === "time" && elapsed >= options.amount) return finish();
       }
-      if (options.onTick) options.onTick(stats());
+      if (options.onTick) options.onTick(stats(true));
     }
 
     /* typing */
@@ -222,6 +236,7 @@
       if (options.mode === "words" && wi >= words.length) return finish();
       paint(wi);
       placeCaret();
+      if (options.onTick) options.onTick(stats(true)); // numbers update after every word
     }
 
     function onInput() {
@@ -302,7 +317,6 @@
       },
       reset: (w) => {
         host.querySelector(".caret").hidden = false;
-        host.querySelectorAll(".word").forEach((n) => (n.hidden = false));
         reset(w);
       },
       stop: () => clearInterval(timer),

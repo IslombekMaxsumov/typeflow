@@ -175,12 +175,12 @@ body.is-typing .options { opacity: 0.2; pointer-events: none; } /* stays in plac
 .typing-box { position: relative; padding: 2px 0 2px var(--s5); cursor: text; }
 .typing-box::before {
   content: ""; position: absolute; left: 0; top: 6px; height: calc(3 * 1.75em); width: 3px; border-radius: 2px;
-  font-size: clamp(1.25rem, 4.8vw, 1.875rem); background: var(--accent); transition: background-color 0.2s var(--ease);
+  font-size: clamp(1.5rem, 5vw, 2rem); background: var(--accent); transition: background-color 0.2s var(--ease);
 }
 .words {
   position: relative; display: flex; flex-wrap: wrap; align-content: flex-start; column-gap: 0.62em;
   height: calc(3 * 1.75em); overflow: hidden;
-  font: 400 clamp(1.25rem, 4.8vw, 1.875rem)/1.75 var(--font-mono); letter-spacing: 0.005em;
+  font: 400 clamp(1.5rem, 5vw, 2rem)/1.75 var(--font-mono); /* 24px+ everywhere: large text */ letter-spacing: 0.005em;
   transition: opacity 0.2s var(--ease);
 }
 .word { display: flex; position: relative; }
