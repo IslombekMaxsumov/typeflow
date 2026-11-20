@@ -89,9 +89,13 @@
   --font-display: "Onest", system-ui, sans-serif;
   --font-body: "Golos Text", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
-  --r-main: 12px;
-  --r-ctl: 8px;
-  --r-badge: 5px;
+  /* Round, not boxy: controls and badges are pills, panels have soft corners.
+     (The brief said 12/8/5 px; changed 2026-11-21 because square corners
+     everywhere felt stiff.) */
+  --r-main: 16px;
+  --r-ctl: 999px;
+  --r-badge: 999px;
+  --r-soft: 12px;  /* for boxes with several lines of text */
   --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 20px; --s6: 24px; --s8: 32px; --s10: 40px; --s12: 48px; --s16: 64px;
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
   --fast: 160ms;
@@ -196,7 +200,7 @@ dialog p { color: var(--ink-2); }
 }
 .tip {
   position: absolute; left: -12px; bottom: calc(100% + 8px); z-index: 30; width: max-content; max-width: min(260px, 100vw - 120px);
-  padding: 8px 10px; border-radius: var(--r-ctl);
+  padding: 8px 12px; border-radius: var(--r-soft);
   background: var(--toast-bg); color: var(--toast-ink); font: 400 0.8125rem/1.45 var(--font-body); text-transform: none; letter-spacing: 0;
   opacity: 0; visibility: hidden; transition: opacity var(--fast) var(--ease); pointer-events: none;
 }

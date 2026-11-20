@@ -8,6 +8,7 @@
   const form = $("options");
   const input = $("typeInput");
   const box = $("box");
+  const pick = Site.picks(form); // the options become one short line of menus
 
   /* ---------- options (remembered) ---------- */
   const saved = store.getJSON("opts", null) || {};
@@ -30,6 +31,7 @@
     form.querySelector(`[name="ttype"][value="${opts.ttype}"]`).checked = true;
     form.punct.checked = opts.punct;
     form.nums.checked = opts.nums;
+    pick.refresh();
   }
 
   /* ---------- the test ---------- */

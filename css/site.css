@@ -55,12 +55,12 @@
 .seg-radio label:has(input:checked) { color: var(--ink); text-decoration-color: var(--accent); }
 .seg-radio label:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
 
-/* checkboxes as words with a small square */
-.toggle { display: inline-flex; align-items: center; gap: var(--s2); min-height: 36px; padding: 4px 0; font-size: 0.9375rem; font-weight: 500; color: var(--ink-2); cursor: pointer; }
-.toggle input { appearance: none; flex: none; width: 14px; height: 14px; margin: 0; border: 1.5px solid var(--line-strong); border-radius: 3px; background: transparent; cursor: pointer; transition: background-color var(--fast), border-color var(--fast); }
-.toggle input:checked { background: var(--accent); border-color: var(--accent); box-shadow: inset 0 0 0 2px var(--bg); }
+/* on/off options as words with a small round dot (filled when on) */
+.toggle { display: inline-flex; align-items: center; gap: 7px; min-height: 40px; padding: 4px 0; font-size: 0.9375rem; font-weight: 500; color: var(--ink-2); cursor: pointer; }
+.toggle input { appearance: none; flex: none; width: 10px; height: 10px; margin: 0; border: 1.5px solid var(--line-strong); border-radius: 50%; background: transparent; cursor: pointer; transition: background-color var(--fast), border-color var(--fast); }
+.toggle input:checked { background: var(--accent); border-color: var(--accent); }
 .toggle:hover, .toggle:has(input:checked) { color: var(--ink); }
-.toggle:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+.toggle:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
 
 /* ---------- header ---------- */
 .site-header { position: sticky; top: 0; z-index: 40; background: var(--bg); border-bottom: 1px solid var(--line); }
@@ -116,28 +116,43 @@
 .footer-copy { margin-left: auto; }
 @media (max-width: 760px) { .footer-inner { display: grid; justify-items: start; } .footer-copy { margin-left: 0; } }
 
-/* ---------- avatars: rounded squares, like a key ---------- */
-.avatar { display: inline-grid; place-items: center; flex: none; border-radius: var(--r-badge); background: color-mix(in srgb, var(--av) 76%, #000); color: #fff; font: 600 0.8rem/1 var(--font-display); /* darkened so white initials pass AA */ letter-spacing: 0.02em; }
+/* ---------- avatars ---------- */
+.avatar { display: inline-grid; place-items: center; flex: none; border-radius: 50%; background: color-mix(in srgb, var(--av) 76%, #000); color: #fff; font: 600 0.8rem/1 var(--font-display); /* darkened so white initials pass AA */ letter-spacing: 0.02em; }
 .avatar-sm { width: 30px; height: 30px; font-size: 0.72rem; }
 .avatar-md { width: 40px; height: 40px; }
-.avatar-lg { width: 72px; height: 72px; font-size: 1.6rem; border-radius: var(--r-ctl); }
+.avatar-lg { width: 72px; height: 72px; font-size: 1.6rem; }
 
-/* ---------- test: the options menu ---------- */
-.options { display: grid; gap: 2px; padding-bottom: var(--s4); margin-bottom: var(--s8); border-bottom: 1px solid var(--line); transition: opacity 0.2s var(--ease); }
-.opt-group { display: block; }
-.opt-group legend { float: left; width: 8.5rem; padding-top: 9px; font-size: 0.8125rem; color: var(--ink-2); }
-.opt-mode .seg-radio label:nth-child(5) { margin-left: var(--s4); } /* a gap between time and word modes */
-.opt-mode .seg-radio label:nth-child(5)::before { content: ""; position: absolute; left: calc(-1 * var(--s4)); top: 10px; bottom: 10px; width: 1px; background: var(--line-strong); }
-.opt-extras { display: block; }
-.opt-extras .toggle + .toggle { margin-left: var(--s4); }
-.opt-group .seg-radio { display: flex; } /* a flex box sits beside the floated label and wraps inside its own column */
-@media (max-width: 600px) {
-  .opt-group legend { width: 6.25rem; font-size: 0.75rem; }
-  .seg-radio { gap: 0 var(--s3); }
-  .opt-extras .toggle + .toggle { margin-left: var(--s3); }
-  .opt-mode .seg-radio label:nth-child(5) { margin-left: 0; } /* word modes wrap to their own line here */
-  .opt-mode .seg-radio label:nth-child(5)::before { display: none; }
+/* ---------- option bar (test and leaderboard) ----------
+   One short line: "30 s ⌄  English ⌄  Words ⌄  · punctuation · numbers".
+   Each value opens a small menu with the real radio buttons (Site.picks). */
+.options { position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 0 var(--s5); padding-bottom: var(--s2); margin-bottom: var(--s6); border-bottom: 1px solid var(--line); transition: opacity 0.2s var(--ease); }
+.pick { position: relative; }
+.pick-btn { display: inline-flex; align-items: center; gap: 4px; min-height: 44px; padding: 4px 2px; border: 0; border-radius: 8px; background: none; color: var(--ink); font-size: 0.9375rem; font-weight: 500; }
+.pick-btn .icon { color: var(--ink-2); transition: transform var(--fast) var(--ease); }
+.pick-btn:hover .pick-value { text-decoration: underline 2px var(--line-strong); text-underline-offset: 6px; }
+.pick-btn[aria-expanded="true"] .icon { transform: rotate(180deg); }
+.pick-menu {
+  position: absolute; top: calc(100% + 4px); left: -10px; z-index: 35; min-width: 200px; padding: 6px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-soft); box-shadow: var(--shadow-pop);
+  animation: rise 0.14s var(--ease);
 }
+.pick-menu legend { float: left; width: 100%; padding: 6px 10px 4px; font-size: 0.75rem; color: var(--ink-2); }
+.pick-menu .seg-radio { clear: both; display: grid; gap: 1px; }
+.pick-menu .seg-radio label { display: flex; justify-content: space-between; gap: var(--s4); min-height: 40px; padding: 6px 10px; border-radius: 8px; text-decoration: none; }
+.pick-menu .seg-radio label:hover { background: var(--raised); }
+.pick-menu .seg-radio label:has(input:checked) { color: var(--ink); background: var(--accent-soft); }
+.pick-menu .seg-radio label:has(input:checked)::after { content: ""; align-self: center; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+.pick-menu.opt-mode .seg-radio label:nth-child(5) { margin: 7px 0 0; } /* a line between time and word modes */
+.pick-menu.opt-mode .seg-radio label:nth-child(5)::before { content: ""; position: absolute; left: 10px; right: 10px; top: -4px; bottom: auto; width: auto; height: 1px; background: var(--line); }
+.opt-extras { display: flex; gap: var(--s4); }
+@media (max-width: 600px) {
+  .options { gap: 0 var(--s4); }
+  .pick { position: static; } /* menus open full width under the bar */
+  .pick-menu { left: 0; right: 0; }
+}
+/* a group of radios that is not a menu (practice page): label on the left */
+.opt-group:not(.pick-menu) legend { float: left; width: 8.5rem; padding-top: 9px; font-size: 0.8125rem; color: var(--ink-2); }
+.opt-group:not(.pick-menu) .seg-radio { display: flex; }
 body.is-typing .options { opacity: 0.2; pointer-events: none; } /* stays in place: no layout jump */
 
 /* ---------- test: live numbers, written inline ---------- */
@@ -147,6 +162,8 @@ body.is-typing .options { opacity: 0.2; pointer-events: none; } /* stays in plac
 .live-label { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8125rem; color: var(--ink-2); }
 .live-num { font: 500 1.375rem/1 var(--font-mono); font-variant-numeric: tabular-nums; color: var(--ink); }
 .live-main { margin-right: var(--s2); }
+/* Speed and accuracy appear once you start typing (no empty dashes before). */
+body:not(.is-typing) .test-page .live-stat:not(.live-main) { visibility: hidden; }
 .live-main .live-num { font-size: clamp(2.5rem, 8vw, 3.5rem); letter-spacing: -0.04em; color: var(--accent-text); }
 
 /* ---------- Rhythm Line on beat ticks ----------
@@ -275,7 +292,7 @@ section[aria-labelledby="dayTitle"] .bar { fill: var(--chart-act); }
 .kbd-row:nth-child(4) { margin-left: 1.6em; }
 .key {
   min-width: clamp(22px, 6.6vw, 42px); height: clamp(32px, 8vw, 42px); display: grid; place-items: center; padding-inline: 2px;
-  border: 1px solid var(--line); border-bottom-width: 2px; border-radius: var(--r-badge); background: var(--surface); color: var(--ink-2);
+  border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 9px; background: var(--surface); color: var(--ink-2);
   font: 400 clamp(0.75rem, 2.6vw, 0.95rem) var(--font-mono); transition: background-color 90ms, color 90ms, border-color 90ms;
 }
 .key.is-lesson { border-color: var(--line-strong); color: var(--ink); }
@@ -300,7 +317,7 @@ section[aria-labelledby="dayTitle"] .bar { fill: var(--chart-act); }
 .player-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .you-tag { padding: 1px 6px; border-radius: var(--r-badge); background: var(--accent); color: var(--on-accent); font-size: 0.7rem; font-weight: 600; }
 .board tr.is-me td { background: var(--accent-soft); }
-.board td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.board td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; text-align: right; }
 .board .wpm { font-weight: 500; color: var(--ink); font-size: 1.05rem; }
 .board .top-1 .wpm { color: var(--accent-text); }
 .board .date { color: var(--ink-2); font-size: 0.875rem; }
@@ -350,7 +367,7 @@ section[aria-labelledby="dayTitle"] .bar { fill: var(--chart-act); }
   #view > section[aria-labelledby="accTitle"] { grid-column: 2; }
 }
 .heat { display: grid; grid-template-rows: repeat(7, 13px); grid-auto-flow: column; grid-auto-columns: 13px; gap: 3px; }
-.cell { border-radius: 2px; background: var(--raised); }
+.cell { border-radius: 50%; background: var(--raised); } /* round dots, not a grid of squares */
 .cell.lv-1 { background: color-mix(in srgb, var(--chart-act) 30%, var(--raised)); }
 .cell.lv-2 { background: color-mix(in srgb, var(--chart-act) 55%, var(--raised)); }
 .cell.lv-3 { background: color-mix(in srgb, var(--chart-act) 78%, var(--raised)); }
@@ -360,7 +377,7 @@ section[aria-labelledby="dayTitle"] .bar { fill: var(--chart-act); }
 .activity .hint { margin-top: var(--s2); }
 .settings-form { display: grid; gap: var(--s4); max-width: 420px; }
 .swatches { display: flex; flex-wrap: wrap; gap: var(--s2); }
-.swatch-opt { position: relative; width: 32px; height: 32px; border-radius: var(--r-badge); background: color-mix(in srgb, var(--av) 76%, #000); cursor: pointer; }
+.swatch-opt { position: relative; width: 32px; height: 32px; border-radius: 50%; background: color-mix(in srgb, var(--av) 76%, #000); cursor: pointer; }
 .swatch-opt input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
 .swatch-opt:has(input:checked) { box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--ink); }
 .swatch-opt:has(input:focus-visible) { outline: 2px solid var(--accent); outline-offset: 5px; }
@@ -383,7 +400,7 @@ section[aria-labelledby="dayTitle"] .bar { fill: var(--chart-act); }
 .pw-field .input { padding-right: 84px; }
 .pw-toggle { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); min-height: 32px; padding: 4px 10px; border: 0; border-radius: var(--r-badge); background: transparent; color: var(--accent-text); font-size: 0.8125rem; font-weight: 600; }
 .pw-toggle:hover { background: var(--raised); }
-#loginError:not(:empty) { padding: 8px 12px; border-radius: var(--r-ctl); background: var(--danger-soft); }
+#loginError:not(:empty) { padding: 8px 14px; border-radius: var(--r-soft); background: var(--danger-soft); }
 #loginError.is-info { background: var(--accent-soft); color: var(--ink); font-weight: 500; }
 
 /* Phones: tooltips open from the left edge of the stats row, so they never run off screen. */

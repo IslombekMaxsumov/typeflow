@@ -6,6 +6,7 @@
   const { el } = Site;
   const $ = (id) => document.getElementById(id);
   const form = $("filters");
+  const pick = Site.picks(form); // filters as one short line of menus
   const TOP = 20;
   const saved = store.getJSON("board", null) || {};
   const state = {
@@ -34,6 +35,7 @@
     form.querySelector(`[name="amount"][value="${state.amount}"]`).checked = true;
     form.querySelector(`[name="blang"][value="${state.lang}"]`).checked = true;
     form.querySelector(`[name="period"][value="${state.period}"]`).checked = true;
+    pick.refresh();
     const list = Store.leaderboard(state);
     const me = Store.current();
     const mine = me ? list.find((e) => e.user.username === me.username) : null;

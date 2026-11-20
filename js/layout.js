@@ -40,6 +40,7 @@
     logout: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',
     repeat: '<path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14M7 22l-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/>',
     arrowRight: '<path d="M5 12h14M12 5l7 7-7 7"/>',
+    chevronDown: '<path d="m6 9 6 6 6-6"/>',
   };
   function icon(name, size = 20) {
     const s = svgEl("svg", { viewBox: "0 0 24 24", width: size, height: size, fill: "none", stroke: "currentColor", "stroke-width": 2, "stroke-linecap": "round", "stroke-linejoin": "round", "aria-hidden": "true", class: "icon icon-" + name });
@@ -114,6 +115,65 @@
       dialog.showModal();
       dialog.querySelector('[data-v="no"]').focus();
     });
+  }
+
+  /* ---------- compact option menus ----------
+     Turns every  fieldset.opt-group  with radios into one short button that
+     shows the chosen value ("30 s ⌄") and opens the radios as a small menu.
+     The radios stay real form fields, so the page's own "change" handling
+     keeps working. Returns refresh(): call it after the page sets the radios. */
+  function picks(form) {
+    const items = [...form.querySelectorAll("fieldset.opt-group")].filter((fs) => fs.querySelector("[type=radio]"));
+    const all = items.map((fs, i) => {
+      fs.id = fs.id || form.id + "-menu-" + i;
+      const wrap = el("div", { class: "pick" });
+      const value = el("span", { class: "pick-value" });
+      const btn = el("button", { type: "button", class: "pick-btn", "aria-expanded": "false", "aria-controls": fs.id }, value, icon("chevronDown", 16));
+      fs.classList.add("pick-menu");
+      fs.hidden = true;
+      fs.before(wrap);
+      wrap.append(btn, fs);
+      const open = (yes, focus = true) => {
+        fs.hidden = !yes;
+        btn.setAttribute("aria-expanded", String(yes));
+        if (yes) {
+          all.forEach((o) => o.wrap !== wrap && o.open(false, false));
+          (fs.querySelector(":checked") || fs.querySelector("input")).focus();
+        } else if (focus) btn.focus();
+      };
+      btn.addEventListener("click", () => open(fs.hidden));
+      // A click picks and closes. With the keyboard, arrows move through the
+      // choices (the menu stays open) and Enter, Space or Escape closes it.
+      let pointer = false;
+      fs.addEventListener("pointerdown", () => (pointer = true));
+      fs.addEventListener("keydown", () => (pointer = false));
+      fs.addEventListener("change", () => {
+        refresh();
+        if (pointer) setTimeout(() => open(false), 120); // a short moment to see the new choice
+      });
+      // Clicking the option that is already chosen closes the menu too.
+      fs.addEventListener("pointerup", (e) => e.target.closest("label")?.querySelector("input:checked") && setTimeout(() => !fs.hidden && open(false), 120));
+      wrap.addEventListener("keydown", (e) => {
+        if (fs.hidden) return;
+        if (e.key === "Escape" || ((e.key === "Enter" || e.key === " ") && e.target.matches("input"))) {
+          e.preventDefault();
+          e.stopPropagation();
+          open(false);
+        }
+      });
+      return { wrap, fs, btn, value, open };
+    });
+    function refresh() {
+      all.forEach(({ fs, btn, value }) => {
+        const label = fs.querySelector("input:checked")?.closest("label");
+        value.textContent = label ? label.textContent.trim() : "";
+        const legend = fs.querySelector("legend");
+        btn.setAttribute("aria-label", (legend ? legend.textContent + ": " : "") + value.textContent);
+      });
+    }
+    document.addEventListener("click", (e) => all.forEach((o) => !o.fs.hidden && !o.wrap.contains(e.target) && o.open(false, false)));
+    refresh();
+    return { refresh };
   }
 
   /* ---------- logo (real SVG files; CSS shows the right one for the theme
@@ -194,5 +254,5 @@
     Core.init();
   }
 
-  window.Site = { el, svgEl, icon, num, pct, duration, date, modeLabel, langLabel, avatar, confirm: confirmBox, setTitle, start };
+  window.Site = { el, svgEl, icon, picks, num, pct, duration, date, modeLabel, langLabel, avatar, confirm: confirmBox, setTitle, start };
 })();
