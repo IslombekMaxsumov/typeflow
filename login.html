@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Typing</title>
+  <meta name="description" content="">
+  <meta name="theme-color" content="#f3f6fb">
+  <!-- Apply the saved theme before the page is drawn, so it never flashes. -->
+  <script>
+    window.APP_NS = "typing";
+    try {
+      var savedTheme = localStorage.getItem("typing:theme");
+      document.documentElement.setAttribute("data-theme", savedTheme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/site.css">
+  <script defer src="js/core.js"></script>
+  <script defer src="js/lang.js"></script>
+  <script defer src="js/texts.js"></script>
+  <script defer src="js/store.js"></script>
+  <script defer src="js/layout.js"></script>
+  <script defer src="js/pages/login.js"></script>
+</head>
+<body data-page="login">
+  <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
+  <header id="site-header" class="site-header"></header>
+
+  <main id="main" tabindex="-1" class="container page auth-page">
+    <h1 id="authTitle" data-i18n="page.login"></h1>
+    <aside class="demo-note" aria-labelledby="demoTitle">
+      <h2 id="demoTitle" data-i18n="auth.demoTitle"></h2>
+      <p><span data-i18n="auth.demoLogin"></span> <code>demo</code> · <span data-i18n="auth.demoPassword"></span> <code>demo123</code></p>
+      <button type="button" id="fillDemo" class="btn btn-ghost btn-small" data-i18n="auth.fillDemo"></button>
+      <p class="hint" data-i18n="auth.localNote"></p>
+    </aside>
+
+    <div class="auth-tabs" role="group" data-i18n-aria="auth.choose">
+      <button type="button" id="tabLogin" class="tab" aria-pressed="true" aria-controls="loginForm" data-i18n="auth.login"></button>
+      <button type="button" id="tabSignup" class="tab" aria-pressed="false" aria-controls="signupForm" data-i18n="auth.signup"></button>
+    </div>
+
+    <form id="loginForm" class="auth-form" novalidate>
+      <div class="field">
+        <label for="lUser" data-i18n="auth.username"></label>
+        <input id="lUser" name="username" class="input" autocomplete="username" autocapitalize="off" spellcheck="false">
+      </div>
+      <div class="field">
+        <label for="lPass" data-i18n="auth.password"></label>
+        <input id="lPass" name="password" type="password" class="input" autocomplete="current-password">
+      </div>
+      <p id="loginError" class="field-error" role="alert"></p>
+      <button type="submit" class="btn" data-i18n="auth.login"></button>
+    </form>
+
+    <form id="signupForm" class="auth-form" novalidate hidden>
+      <div class="field">
+        <label for="sName" data-i18n="auth.displayName"></label>
+        <input id="sName" name="name" class="input" autocomplete="nickname" maxlength="30" aria-describedby="sName-err">
+        <p id="sName-err" class="field-error"></p>
+      </div>
+      <div class="field">
+        <label for="sUser" data-i18n="auth.username"></label>
+        <input id="sUser" name="username" class="input" autocomplete="username" autocapitalize="off" spellcheck="false" maxlength="20" aria-describedby="sUser-hint sUser-err">
+        <p id="sUser-hint" class="hint" data-i18n="auth.usernameHint"></p>
+        <p id="sUser-err" class="field-error"></p>
+      </div>
+      <div class="field">
+        <label for="sPass" data-i18n="auth.password"></label>
+        <input id="sPass" name="password" type="password" class="input" autocomplete="new-password" aria-describedby="sPass-hint sPass-err">
+        <p id="sPass-hint" class="hint" data-i18n="auth.passwordHint"></p>
+        <p id="sPass-err" class="field-error"></p>
+      </div>
+      <div class="field">
+        <label for="sPass2" data-i18n="auth.password2"></label>
+        <input id="sPass2" name="password2" type="password" class="input" autocomplete="new-password" aria-describedby="sPass2-err">
+        <p id="sPass2-err" class="field-error"></p>
+      </div>
+      <button type="submit" class="btn" data-i18n="auth.create"></button>
+    </form>
+  </main>
+
+  <footer id="site-footer" class="site-footer"></footer>
+  <div id="toasts" class="toast-host"></div>
+</body>
+</html>

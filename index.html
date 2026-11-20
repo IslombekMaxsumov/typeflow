@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Typing</title>
+  <meta name="description" content="">
+  <meta name="theme-color" content="#f3f6fb">
+  <!-- Apply the saved theme before the page is drawn, so it never flashes. -->
+  <script>
+    window.APP_NS = "typing";
+    try {
+      var savedTheme = localStorage.getItem("typing:theme");
+      document.documentElement.setAttribute("data-theme", savedTheme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/site.css">
+  <script defer src="js/core.js"></script>
+  <script defer src="js/lang.js"></script>
+  <script defer src="js/texts.js"></script>
+  <script defer src="js/store.js"></script>
+  <script defer src="js/layout.js"></script>
+  <script defer src="js/engine.js"></script>
+  <script defer src="js/charts.js"></script>
+  <script defer src="js/pages/test.js"></script>
+</head>
+<body data-page="test">
+  <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
+  <header id="site-header" class="site-header"></header>
+
+  <main id="main" tabindex="-1" class="container page test-page">
+    <h1 class="visually-hidden" data-i18n="page.test"></h1>
+    <form id="options" class="options" novalidate>
+        <fieldset class="opt-group opt-mode">
+          <legend data-i18n="opt.mode"></legend>
+          <div class="seg-radio">
+            <label><input type="radio" name="mode" value="time-15"> <span data-i18n="mode.s15"></span></label>
+            <label><input type="radio" name="mode" value="time-30"> <span data-i18n="mode.s30"></span></label>
+            <label><input type="radio" name="mode" value="time-60"> <span data-i18n="mode.s60"></span></label>
+            <label><input type="radio" name="mode" value="time-120"> <span data-i18n="mode.s120"></span></label>
+            <label><input type="radio" name="mode" value="words-10"> <span data-i18n="mode.w10"></span></label>
+            <label><input type="radio" name="mode" value="words-25"> <span data-i18n="mode.w25"></span></label>
+            <label><input type="radio" name="mode" value="words-50"> <span data-i18n="mode.w50"></span></label>
+          </div>
+        </fieldset>
+        <fieldset class="opt-group ">
+          <legend data-i18n="opt.tlang"></legend>
+          <div class="seg-radio">
+            <label><input type="radio" name="tlang" value="uz"> <span data-i18n="tlang.uz"></span></label>
+            <label><input type="radio" name="tlang" value="ru"> <span data-i18n="tlang.ru"></span></label>
+            <label><input type="radio" name="tlang" value="en"> <span data-i18n="tlang.en"></span></label>
+          </div>
+        </fieldset>
+        <fieldset class="opt-group ">
+          <legend data-i18n="opt.ttype"></legend>
+          <div class="seg-radio">
+            <label><input type="radio" name="ttype" value="words"> <span data-i18n="opt.words"></span></label>
+            <label><input type="radio" name="ttype" value="sentences"> <span data-i18n="opt.sentences"></span></label>
+          </div>
+        </fieldset>
+        <fieldset class="opt-group opt-extras">
+          <legend data-i18n="opt.extras"></legend>
+          <label class="toggle"><input type="checkbox" name="punct"> <span data-i18n="opt.punct"></span></label>
+          <label class="toggle"><input type="checkbox" name="nums"> <span data-i18n="opt.nums"></span></label>
+        </fieldset>
+    </form>
+
+    <section id="testArea" class="test-area" aria-labelledby="testTitle">
+      <h2 id="testTitle" class="visually-hidden" data-i18n="test.title"></h2>
+      <div class="live" aria-hidden="true">
+        <span id="liveProgress" class="live-main"></span>
+        <span id="liveWpm"></span>
+        <span id="liveAcc"></span>
+      </div>
+      <div id="box" class="typing-box">
+        <div id="words" class="words" aria-hidden="true"></div>
+        <label for="typeInput" class="visually-hidden" data-i18n="test.inputLabel"></label>
+        <input id="typeInput" class="type-input" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-describedby="srText">
+        <p id="srText" class="visually-hidden"></p>
+        <div id="focusHint" class="focus-hint" aria-hidden="true" data-i18n="test.focus"></div>
+      </div>
+      <div class="test-actions">
+        <button type="button" id="restart" class="btn btn-ghost"><span data-i18n="action.restart"></span></button>
+        <p class="hint" data-i18n="test.shortcuts"></p>
+      </div>
+    </section>
+
+    <section id="results" class="results" hidden aria-labelledby="resTitle">
+      <h2 id="resTitle" tabindex="-1" data-i18n="res.title"></h2>
+      <p id="resBest" class="pb-badge" hidden data-i18n="res.best"></p>
+      <div class="res-main">
+        <div class="res-big"><span class="res-label" data-i18n="res.wpm"></span><span id="resWpm" class="res-value"></span></div>
+        <div class="res-big"><span class="res-label" data-i18n="res.acc"></span><span id="resAcc" class="res-value"></span></div>
+      </div>
+      <dl id="resStats" class="res-stats"></dl>
+      <div id="resChart" class="res-chart"></div>
+      <p id="resGuest" class="notice" hidden></p>
+      <div class="res-actions">
+        <button type="button" id="nextTest" class="btn"><span data-i18n="res.next"></span></button>
+        <button type="button" id="repeatTest" class="btn btn-ghost"><span data-i18n="res.repeat"></span></button>
+      </div>
+    </section>
+    <p id="srLive" class="visually-hidden" role="status"></p>
+  </main>
+
+  <footer id="site-footer" class="site-footer"></footer>
+  <div id="toasts" class="toast-host"></div>
+</body>
+</html>

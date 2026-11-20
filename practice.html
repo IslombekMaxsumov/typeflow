@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Typing</title>
+  <meta name="description" content="">
+  <meta name="theme-color" content="#f3f6fb">
+  <!-- Apply the saved theme before the page is drawn, so it never flashes. -->
+  <script>
+    window.APP_NS = "typing";
+    try {
+      var savedTheme = localStorage.getItem("typing:theme");
+      document.documentElement.setAttribute("data-theme", savedTheme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/site.css">
+  <script defer src="js/core.js"></script>
+  <script defer src="js/lang.js"></script>
+  <script defer src="js/texts.js"></script>
+  <script defer src="js/store.js"></script>
+  <script defer src="js/layout.js"></script>
+  <script defer src="js/engine.js"></script>
+  <script defer src="js/pages/practice.js"></script>
+</head>
+<body data-page="practice">
+  <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
+  <header id="site-header" class="site-header"></header>
+
+  <main id="main" tabindex="-1" class="container page">
+    <h1 data-i18n="page.practice"></h1>
+    <p class="page-intro" data-i18n="practice.intro"></p>
+    <div id="pick">
+        <fieldset class="opt-group ">
+          <legend data-i18n="opt.tlang"></legend>
+          <div class="seg-radio">
+            <label><input type="radio" name="plang" value="uz"> <span data-i18n="tlang.uz"></span></label>
+            <label><input type="radio" name="plang" value="ru"> <span data-i18n="tlang.ru"></span></label>
+            <label><input type="radio" name="plang" value="en"> <span data-i18n="tlang.en"></span></label>
+          </div>
+        </fieldset>
+      <ul id="lessons" class="lesson-grid"></ul>
+    </div>
+
+    <section id="lesson" class="lesson" hidden aria-labelledby="lessonTitle">
+      <button type="button" id="backToLessons" class="back-link" data-i18n="practice.back"></button>
+      <h2 id="lessonTitle" tabindex="-1"></h2>
+      <p id="lessonGoal" class="hint"></p>
+      <div class="live" aria-hidden="true">
+        <span id="pLiveProgress" class="live-main"></span>
+        <span id="pLiveWpm"></span>
+        <span id="pLiveAcc"></span>
+      </div>
+      <div id="pbox" class="typing-box">
+        <div id="pwords" class="words" aria-hidden="true"></div>
+        <label for="ptypeInput" class="visually-hidden" data-i18n="test.inputLabel"></label>
+        <input id="ptypeInput" class="type-input" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-describedby="psrText">
+        <p id="psrText" class="visually-hidden"></p>
+        <div id="pfocusHint" class="focus-hint" aria-hidden="true" data-i18n="test.focus"></div>
+      </div>
+      <div id="kbd" class="kbd" aria-hidden="true"></div>
+      <div id="lessonDone" class="lesson-done" role="status" hidden></div>
+      <div class="test-actions">
+        <button type="button" id="retryLesson" class="btn btn-ghost" data-i18n="practice.retry"></button>
+        <button type="button" id="nextLesson" class="btn" data-i18n="practice.next" hidden></button>
+      </div>
+    </section>
+  </main>
+
+  <footer id="site-footer" class="site-footer"></footer>
+  <div id="toasts" class="toast-host"></div>
+</body>
+</html>

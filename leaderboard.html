@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Typing</title>
+  <meta name="description" content="">
+  <meta name="theme-color" content="#f3f6fb">
+  <!-- Apply the saved theme before the page is drawn, so it never flashes. -->
+  <script>
+    window.APP_NS = "typing";
+    try {
+      var savedTheme = localStorage.getItem("typing:theme");
+      document.documentElement.setAttribute("data-theme", savedTheme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
+    } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/site.css">
+  <script defer src="js/core.js"></script>
+  <script defer src="js/lang.js"></script>
+  <script defer src="js/texts.js"></script>
+  <script defer src="js/store.js"></script>
+  <script defer src="js/layout.js"></script>
+  <script defer src="js/pages/leaderboard.js"></script>
+</head>
+<body data-page="leaderboard">
+  <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
+  <header id="site-header" class="site-header"></header>
+
+  <main id="main" tabindex="-1" class="container page">
+    <h1 data-i18n="page.leaderboard"></h1>
+    <form id="filters" class="options" novalidate>
+        <fieldset class="opt-group ">
+          <legend data-i18n="opt.mode"></legend>
+          <div class="seg-radio">
+            <label><input type="radio" name="amount" value="15"> <span data-i18n="mode.s15"></span></label>
+            <label><input type="radio" name="amount" value="30"> <span data-i18n="mode.s30"></span></label>
+            <label><input type="radio" name="amount" value="60"> <span data-i18n="mode.s60"></span></label>
+          </div>
+        </fieldset>
+        <fieldset class="opt-group ">
+          <legend data-i18n="opt.tlang"></legend>
+          <div class="seg-radio">
+            <label><input type="radio" name="blang" value="uz"> <span data-i18n="tlang.uz"></span></label>
+            <label><input type="radio" name="blang" value="ru"> <span data-i18n="tlang.ru"></span></label>
+            <label><input type="radio" name="blang" value="en"> <span data-i18n="tlang.en"></span></label>
+          </div>
+        </fieldset>
+        <fieldset class="opt-group ">
+          <legend data-i18n="board.period"></legend>
+          <div class="seg-radio">
+            <label><input type="radio" name="period" value="today"> <span data-i18n="board.today"></span></label>
+            <label><input type="radio" name="period" value="week"> <span data-i18n="board.week"></span></label>
+            <label><input type="radio" name="period" value="all"> <span data-i18n="board.all"></span></label>
+          </div>
+        </fieldset>
+    </form>
+    <p id="boardCount" class="result-count" role="status"></p>
+    <div class="table-wrap"><table id="board" class="board"></table></div>
+    <div id="boardEmpty" class="empty" hidden>
+      <h2 data-i18n="board.emptyTitle"></h2>
+      <p data-i18n="board.emptyText"></p>
+      <a class="btn" href="index.html" data-i18n="board.takeTest"></a>
+    </div>
+    <p id="you" class="you-line"></p>
+    <p class="hint" data-i18n="board.note"></p>
+  </main>
+
+  <footer id="site-footer" class="site-footer"></footer>
+  <div id="toasts" class="toast-host"></div>
+</body>
+</html>
