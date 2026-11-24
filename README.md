@@ -1,5 +1,7 @@
 # typeflow — Find your rhythm.
 
+**Live site: https://islombekmaxsumov.github.io/typeflow/**
+
 Site #5 of my 10-websites course project. A calm typing test and trainer in Uzbek, Russian and English, in plain HTML, CSS and JavaScript (no framework, no build step, no backend).
 
 **Demo account for checking:** login `demo`, password `demo123` (pre-filled with 10 weeks of results). Accounts are saved only in this browser.
